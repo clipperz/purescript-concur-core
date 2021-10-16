@@ -1,6 +1,6 @@
 {
   "name": "purescript-concur-core",
-  "version": "0.4.2",
+  "version": "0.4.3-SNAPSHOT",
   "description": "Concur UI framework for Purescript, Core framework.",
   "license": "MIT",
   "repository": "purescript-concur/purescript-concur-core",
@@ -11,7 +11,8 @@
   "files": [],
   "scripts": {
     "build": "spago build",
-    "test": "spago -x test.dhall test"
+    "test": "spago -x test.dhall test",
+    "clean": "while read gitIgnorePattern; do rm -rf .${gitIgnorePattern}; done < .gitignore"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
