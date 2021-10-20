@@ -22,38 +22,32 @@ import Prelude (Unit, bind, map, pure, void, ($))
 -- Helpers for some very common use of unsafe blocking io
 
 -- | Construct a widget, by wrapping an existing widget in a view event
-mkNodeWidget ::
-  forall a v.
-  ((a -> Effect Unit) -> v -> v) ->
-  Widget v a ->
-  Widget v a
+mkNodeWidget :: forall a v. ((a -> Effect Unit) -> v -> v) -> Widget v a -> Widget v a
 mkNodeWidget mkView (Widget w) = Widget (mkNodeWidget' mkView w)
 
 -- Private
 mkNodeWidget' :: forall a v. ((a -> Effect Unit) -> v -> v) -> Free (WidgetStep v) a -> Free (WidgetStep v) a
 mkNodeWidget' mkView w = case resume w of
-  Right a -> pure a
-  Left (WidgetStepEff eff) -> wrap $ WidgetStepEff do
-      w' <- eff
-      pure $ mkNodeWidget' mkView w'
-  Left (WidgetStepView wsr) -> wrap $ WidgetStepEff do
-      var <- EVar.empty
-      let eventHandler = (\a -> void (EVar.tryPut (pure a) var))
-      let cont' = sequential (alt (parallel (liftAff (AVar.take var)))
-                                  (parallel (map (mkNodeWidget' mkView) wsr.cont))
-                             )
-      pure $ wrap $ WidgetStepView
-        { view: mkView eventHandler wsr.view
-        , cont: cont'
+    Right a -> pure a
+    Left (WidgetStepEff eff) -> wrap $ WidgetStepEff do
+        w' <- eff
+        pure $ mkNodeWidget' mkView w'
+    Left (WidgetStepView wsr) -> wrap $ WidgetStepEff do
+        var <- EVar.empty
+        let eventHandler = (\a -> void (EVar.tryPut (pure a) var))
+        let cont' = sequential (alt (parallel (liftAff (AVar.take var)))
+                                    (parallel (map (mkNodeWidget' mkView) wsr.cont))
+                                )
+        pure $ wrap $ WidgetStepView {
+            view:   mkView eventHandler wsr.view,
+            cont:   cont'
         }
+
 -- | Construct a widget with just props
-mkLeafWidget ::
-  forall a v.
-  ((a -> Effect Unit) -> v) ->
-  Widget v a
+mkLeafWidget :: forall a v. ((a -> Effect Unit) -> v) -> Widget v a
 mkLeafWidget mkView = Widget $ wrap $ WidgetStepEff do
-  var <- EVar.empty
-  pure $ wrap $ WidgetStepView
-    { view: mkView (\a -> void (EVar.tryPut (pure a) var))
-    , cont: liftAff (AVar.take var)
+    var <- EVar.empty
+    pure $ wrap $ WidgetStepView {
+        view:   mkView (\a -> void (EVar.tryPut (pure a) var)),
+        cont:   liftAff (AVar.take var)
     }

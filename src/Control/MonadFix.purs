@@ -26,25 +26,25 @@ foreign import fixPure :: forall a. ((Unit -> a) -> a) -> a
 -- | not to apply the supplied function until the computation returned; else
 -- | a dynamic error will be thrown.
 class (Monad m) <= MonadFix m where
-  mfix :: forall a. ((Unit -> a) -> m a) -> m a
+    mfix :: forall a. ((Unit -> a) -> m a) -> m a
 
 instance monadFixRWST :: (Monoid w, MonadFix m) => MonadFix (RWST r w s m) where
-  mfix f = RWST \r s -> mfix \t -> runRWST (f \u -> case t u of RWSResult _ a _ -> a) r s
+    mfix f = RWST \r s -> mfix \t -> runRWST (f \u -> case t u of RWSResult _ a _ -> a) r s
 
 instance monadFixIdentity :: MonadFix Identity where
-  mfix = Identity <<< fixPure <<< (unwrap <<< _)
+    mfix = Identity <<< fixPure <<< (unwrap <<< _)
 
 instance monadFixEff :: MonadFix Effect where
-  mfix = fixEffect
+    mfix = fixEffect
 
 instance monadFixFunction :: MonadFix (Function r) where
-  mfix f r = fixPure (flip f r)
+    mfix f r = fixPure (flip f r)
 
 instance monadFixReaderT :: (MonadFix m) => MonadFix (ReaderT r m) where
-  mfix f = ReaderT \r -> mfix (flip runReaderT r <<< f)
+    mfix f = ReaderT \r -> mfix (flip runReaderT r <<< f)
 
 instance monadFixStateT :: (MonadFix m) => MonadFix (StateT s m) where
-  mfix f = StateT \s -> mfix (flip runStateT s <<< f <<< (fst <<< _))
+    mfix f = StateT \s -> mfix (flip runStateT s <<< f <<< (fst <<< _))
 
 instance monadFixWriterT :: (MonadFix m, Monoid w) => MonadFix (WriterT w m) where
-  mfix f = WriterT $ mfix (runWriterT <<< f <<< (fst <<< _))
+    mfix f = WriterT $ mfix (runWriterT <<< f <<< (fst <<< _))

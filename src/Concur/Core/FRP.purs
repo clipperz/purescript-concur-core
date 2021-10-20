@@ -132,6 +132,7 @@ loopS a f = step (extract this) do
 --   s <- update this
 --   pure (loopS (extract s) f)
 --   where this = f Nothing
+
 -- | Folding signals. Similar to how signals used to work in Elm.
 -- | This can be used to implement simple stateful Signals.
 -- | e.g. `counter = fold (\n _ -> n+1) 0 clicks`

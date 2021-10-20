@@ -15,34 +15,25 @@ import Effect.Exception (Error)
 -- | 1. Runs the Effect action
 -- | 2. Forks the Aff action
 -- | 3. Extracts and returns the view
-discharge ::
-  forall a v.
-  Monoid v =>
-  (Either Error (Widget v a) -> Effect Unit) ->
-  Widget v a ->
-  Effect v
+discharge :: forall a v. Monoid v => (Either Error (Widget v a) -> Effect Unit) -> Widget v a -> Effect v
 discharge handler (Widget w) = case resume w of
-  Right _ -> pure mempty
-  Left (WidgetStepEff eff) -> do
-      w' <- eff
-      discharge handler (Widget w')
-  Left (WidgetStepView ws) -> do
-      runAff_ (handler <<< map Widget) ws.cont
-      pure ws.view
+    Right _ -> pure mempty
+    Left (WidgetStepEff eff) -> do
+        w' <- eff
+        discharge handler (Widget w')
+    Left (WidgetStepView ws) -> do
+        runAff_ (handler <<< map Widget) ws.cont
+        pure ws.view
 
 -- | Discharge only the top level blocking effect of a widget (if any) to get access to the view
 -- | Returns the view, and the remaining widget
-dischargePartialEffect ::
-  forall a v.
-  Monoid v =>
-  Widget v a ->
-  Effect (Tuple (Widget v a) v)
+dischargePartialEffect :: forall a v. Monoid v => Widget v a -> Effect (Tuple (Widget v a) v)
 dischargePartialEffect w = case resume (unWidget w) of
-  Right _ -> pure (Tuple w mempty)
-  Left (WidgetStepEff eff) -> do
-      w' <- eff
-      dischargePartialEffect (Widget w')
-  Left (WidgetStepView ws) -> pure (Tuple (Widget (wrap (WidgetStepView ws))) ws.view)
+    Right _ -> pure (Tuple w mempty)
+    Left (WidgetStepEff eff) -> do
+        w' <- eff
+        dischargePartialEffect (Widget w')
+    Left (WidgetStepView ws) -> pure (Tuple (Widget (wrap (WidgetStepView ws))) ws.view)
 
 {-
 -- | Discharge a widget, forces async resolution of the continuation.
