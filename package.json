@@ -16,8 +16,8 @@
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
-    "purescript": "^0.14.5",
+    "purescript": "^0.15.4",
     "rimraf": "^3.0.0",
-    "spago": "^0.20.3"
+    "spago": "^0.20.9"
   }
 }
