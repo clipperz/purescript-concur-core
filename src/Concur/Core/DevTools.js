@@ -4,25 +4,25 @@ function hasDevTools() {
 	return (process.env.NODE_ENV === 'development' && window.__REDUX_DEVTOOLS_EXTENSION__);
 }
 
-exports.connectDevTools = function() {
+export function connectDevTools() {
 	if (hasDevTools()) {
 		return window.__REDUX_DEVTOOLS_EXTENSION__.connect();
 	} else {
 		// ??
 		return null;
 	}
-};
+}
 
-exports.disconnectDevTools = function() {
+export function disconnectDevTools() {
 	if (hasDevTools()) {
 		return window.__REDUX_DEVTOOLS_EXTENSION__.disconnect();
 	} else {
 		// ??
 		return null;
 	}
-};
+}
 
-exports.sendToDevTools = function(connection) {
+export function sendToDevTools(connection) {
 	return function(action) {
 		return function(state) {
 			return function() {
@@ -35,9 +35,9 @@ exports.sendToDevTools = function(connection) {
 			};
 		};
 	};
-};
+}
 
-exports.subscribeDevTools = function(connection) {
+export function subscribeDevTools(connection) {
 	return function(handler) {
 		return function() {
 			if (hasDevTools()) {
@@ -53,10 +53,10 @@ exports.subscribeDevTools = function(connection) {
 			}
 		};
 	};
-};
+}
 
-exports.unsubscribeDevTools = function(connection) {
+export function unsubscribeDevTools(connection) {
 	return function() {
 		connection.unsubscribe();
 	};
-};
+}
