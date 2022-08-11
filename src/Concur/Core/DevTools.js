@@ -1,8 +1,8 @@
 "use strict";
 
-function hasDevTools() {
-	return (process.env.NODE_ENV === 'development' && window.__REDUX_DEVTOOLS_EXTENSION__);
-}
+// function hasDevTools() {
+// 	return (process.env.NODE_ENV === 'development' && window.__REDUX_DEVTOOLS_EXTENSION__);
+// }
 
 function connectDevTools() {
 	if (hasDevTools()) {
@@ -61,4 +61,4 @@ function unsubscribeDevTools(connection) {
 	};
 }
 
-export {connectDevTools, disconnectDevTools, hasDevTools, sendToDevTools, subscribeDevTools, unsubscribeDevTools}
+export {connectDevTools, disconnectDevTools, /* hasDevTools, */ sendToDevTools, subscribeDevTools, unsubscribeDevTools}
