@@ -1,6 +1,6 @@
 {
   "name": "purescript-concur-core",
-  "version": "0.4.3-SNAPSHOT",
+  "version": "0.5.0",
   "description": "Concur UI framework for Purescript, Core framework.",
   "license": "MIT",
   "repository": "purescript-concur/purescript-concur-core",
